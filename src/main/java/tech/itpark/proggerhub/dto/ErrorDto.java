@@ -9,9 +9,11 @@ import tech.itpark.proggerhub.errorcodes.Codes;
 @AllArgsConstructor
 @Data
 public class ErrorDto {
-  private String code; // err.login_invalid -> JSON (information disclosure)
 
-  public static ErrorDto notFound() {
-    return new ErrorDto(Codes.NOT_FOUND);
-  }
+    private String code;
+
+    public static ErrorDto notFound() {
+        return new ErrorDto(Codes.NOT_FOUND);
+    }
+
 }

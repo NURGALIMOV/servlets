@@ -5,6 +5,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 public interface ErrorController {
+
     default void notFound(HttpServletRequest request, HttpServletResponse response) {
         sendError(request, response, 404, "Not Found");
     }
@@ -20,4 +21,5 @@ public interface ErrorController {
             throw new RuntimeException(e);
         }
     }
+
 }

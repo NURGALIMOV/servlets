@@ -1,23 +1,26 @@
 package tech.itpark.proggerhub.exception;
 
 public class PermissionDeniedException extends RuntimeException {
-  public PermissionDeniedException() {
-    super();
-  }
 
-  public PermissionDeniedException(String message) {
-    super(message);
-  }
+    public PermissionDeniedException() {
+        super();
+    }
 
-  public PermissionDeniedException(String message, Throwable cause) {
-    super(message, cause);
-  }
+    public PermissionDeniedException(String message) {
+        super(message);
+    }
 
-  public PermissionDeniedException(Throwable cause) {
-    super(cause);
-  }
+    public PermissionDeniedException(String message, Throwable cause) {
+        super(message, cause);
+    }
 
-  protected PermissionDeniedException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
-    super(message, cause, enableSuppression, writableStackTrace);
-  }
+    public PermissionDeniedException(Throwable cause) {
+        super(cause);
+    }
+
+    protected PermissionDeniedException(String message, Throwable cause, boolean enableSuppression,
+                                        boolean writableStackTrace) {
+        super(message, cause, enableSuppression, writableStackTrace);
+    }
+
 }

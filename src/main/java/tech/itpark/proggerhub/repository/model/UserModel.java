@@ -6,6 +6,8 @@ import lombok.Data;
 @AllArgsConstructor
 @Data
 public class UserModel {
-  private String login;
-  private String hash;
+
+    private String login;
+    private String hash;
+
 }

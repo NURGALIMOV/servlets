@@ -6,6 +6,8 @@ import lombok.Data;
 @AllArgsConstructor
 @Data
 public class UserTokenModel {
-  private long id;
-  private String token;
+
+    private long id;
+    private String token;
+
 }

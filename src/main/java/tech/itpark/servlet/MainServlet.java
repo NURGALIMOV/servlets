@@ -8,12 +8,11 @@ import javax.servlet.UnavailableException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import java.util.Map;
 import java.util.Optional;
 
-// Servlet -> Singleton
 public class MainServlet extends HttpServlet {
+
     private Map<String, Map<String, Handler>> routes;
     private ErrorController errorCtrl;
 
@@ -31,11 +30,11 @@ public class MainServlet extends HttpServlet {
     }
 
     @Override
-    protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void service(HttpServletRequest req, HttpServletResponse resp) {
         Optional.ofNullable(routes.get(req.getServletPath()))
                 .map(o -> o.getOrDefault(req.getMethod(), errorCtrl::methodNotAllowed))
                 .orElse(errorCtrl::notFound)
-                .handle(req, resp)
-        ;
+                .handle(req, resp);
     }
+
 }

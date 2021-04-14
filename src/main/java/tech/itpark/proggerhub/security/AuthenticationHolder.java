@@ -1,19 +1,22 @@
 package tech.itpark.proggerhub.security;
 
 public class AuthenticationHolder {
-  public static final AuthenticationHolder instance = new AuthenticationHolder();
-  private Authentication auth;
-  private AuthenticationHolder() {}
 
-  public static AuthenticationHolder getInstance() {
-    return instance;
-  }
+    public static final AuthenticationHolder instance = new AuthenticationHolder();
+    private Authentication auth;
 
-  public Authentication getAuth() {
-    return auth;
-  }
+    private AuthenticationHolder() {}
 
-  public void setAuth(Authentication auth) {
-    this.auth = auth;
-  }
+    public static AuthenticationHolder getInstance() {
+        return instance;
+    }
+
+    public Authentication getAuth() {
+        return auth;
+    }
+
+    public void setAuth(Authentication auth) {
+        this.auth = auth;
+    }
+
 }

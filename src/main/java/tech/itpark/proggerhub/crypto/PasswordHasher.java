@@ -10,40 +10,32 @@ import java.security.SecureRandom;
 @Component
 @RequiredArgsConstructor
 public class PasswordHasher {
-  private final MessageDigest digest;
-  private final SecureRandom random = new SecureRandom();
-  private final int DEFAULT_SALT_LENGTH = 64;
-  private final String separator = ":";
 
-  public String hash(String raw, int saltLength) {
-    // генерируется на каждого пользователя отдельно
-    final var saltBytes = new byte[saltLength];
-    random.nextBytes(saltBytes);
-    final var saltHex = Hex.encode(saltBytes);
-    return saltHex + separator + Hex.encode(digest.digest(
-        // salted hash
-        (saltHex + separator + raw).getBytes(StandardCharsets.UTF_8)
-    ));
-  }
+    private final MessageDigest digest;
+    private final SecureRandom random = new SecureRandom();
+    private static final int DEFAULT_SALT_LENGTH = 64;
+    private static final String SEPARATOR = ":";
 
-  // raw, cleantext
-  public String hash(String raw) {
-    return hash(raw, DEFAULT_SALT_LENGTH);
-  }
-
-  public boolean match(String hash, String raw) {
-    final var parts = hash.split(separator);
-    if (parts.length != 2) {
-      throw new InvalidPasswordFormatException();
+    public String hash(String raw, int saltLength) {
+        final var saltBytes = new byte[saltLength];
+        random.nextBytes(saltBytes);
+        final var saltHex = Hex.encode(saltBytes);
+        return saltHex + SEPARATOR + Hex.encode(digest.digest((saltHex + SEPARATOR + raw).getBytes(StandardCharsets.UTF_8)));
     }
 
-    final var saltHex = parts[0];
-    final var hashedPasswordHex = parts[1];
-    final var calculatedPasswordHex = Hex.encode(digest.digest(
-        // salted hash
-        (saltHex + separator + raw).getBytes(StandardCharsets.UTF_8)
-    ));
+    public String hash(String raw) {
+        return hash(raw, DEFAULT_SALT_LENGTH);
+    }
 
-    return hashedPasswordHex.equals(calculatedPasswordHex);
-  }
+    public boolean match(String hash, String raw) {
+        final var parts = hash.split(SEPARATOR);
+        if (parts.length != 2) {
+            throw new InvalidPasswordFormatException();
+        }
+        final var saltHex = parts[0];
+        final var hashedPasswordHex = parts[1];
+        final var calculatedPasswordHex = Hex.encode(digest.digest((saltHex + SEPARATOR + raw).getBytes(StandardCharsets.UTF_8)));
+        return hashedPasswordHex.equals(calculatedPasswordHex);
+    }
+
 }

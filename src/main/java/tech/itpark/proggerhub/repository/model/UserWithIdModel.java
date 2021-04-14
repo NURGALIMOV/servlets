@@ -6,7 +6,9 @@ import lombok.Data;
 @AllArgsConstructor
 @Data
 public class UserWithIdModel {
-  private long id;
-  private String login;
-  private String hash;
+
+    private long id;
+    private String login;
+    private String hash;
+
 }

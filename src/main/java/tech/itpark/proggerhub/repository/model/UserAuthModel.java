@@ -8,6 +8,8 @@ import java.util.Set;
 @AllArgsConstructor
 @Data
 public class UserAuthModel {
-  private long id;
-  private Set<String> roles;
+
+    private long id;
+    private Set<String> roles;
+
 }

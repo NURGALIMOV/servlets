@@ -9,6 +9,8 @@ import java.util.Set;
 @AllArgsConstructor
 @Data
 public class UserAuthModel implements Authentication {
-  private long id;
-  private Set<String> roles;
+
+    private long id;
+    private Set<String> roles;
+
 }
