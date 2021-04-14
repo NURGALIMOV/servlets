@@ -22,10 +22,11 @@ public class AuthRepository {
     public long save(UserModel model) {
         try (final var conn = ds.getConnection();
              final var stmt =
-                     conn.prepareStatement("INSERT INTO users(login, password) VALUES(?, ?) RETURNING id;")) {
+                     conn.prepareStatement("INSERT INTO users(login, password, secret_phrase) VALUES(?, ?, ?) RETURNING id;")) {
             var index = 0;
             stmt.setString(++index, model.getLogin());
-            stmt.setString(++index, model.getHash());
+            stmt.setString(++index, model.getPasswordHash());
+            stmt.setString(++index, model.getSecretPhraseHash());
             try (final var rs = stmt.executeQuery()) {
                 if (!rs.next()) {
                     throw new DataAccessException("no returning id");
@@ -41,9 +42,14 @@ public class AuthRepository {
         try (final var conn = ds.getConnection();
              final var stmt = conn.createStatement();
              final var rs =
-                     stmt.executeQuery("SELECT id, login, password FROM users WHERE login = '" + login + "'")) {
+                     stmt.executeQuery("SELECT id, login, password, secret_phrase FROM users WHERE login = '" + login +
+                             "'")) {
             return rs.next() ? Optional.of(
-                    new UserWithIdModel(rs.getLong("id"), rs.getString("login"), rs.getString("password"))) :
+                    new UserWithIdModel(
+                            rs.getLong("id"),
+                            rs.getString("login"),
+                            rs.getString("password"),
+                            rs.getString("secret_phrase"))) :
                     Optional.empty();
         } catch (SQLException e) {
             throw new DataAccessException(e);
@@ -57,6 +63,19 @@ public class AuthRepository {
             var index = 0;
             stmt.setLong(++index, model.getId());
             stmt.setString(++index, model.getToken());
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new DataAccessException(e);
+        }
+    }
+
+    public void updatePassword(long id, String passwordHash) {
+        try (final var conn = ds.getConnection();
+             final var stmt =
+                     conn.prepareStatement("UPDATE users SET password = ? where users.id = ?;")) {
+            var index = 0;
+            stmt.setString(++index, passwordHash);
+            stmt.setLong(++index, id);
             stmt.executeUpdate();
         } catch (SQLException e) {
             throw new DataAccessException(e);

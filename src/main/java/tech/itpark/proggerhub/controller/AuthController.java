@@ -7,6 +7,7 @@ import tech.itpark.proggerhub.dto.UserDto;
 import tech.itpark.proggerhub.dto.UserIdDto;
 import tech.itpark.proggerhub.dto.UserTokenDto;
 import tech.itpark.proggerhub.exception.AuthException;
+import tech.itpark.proggerhub.exception.PasswordRecoveryException;
 import tech.itpark.proggerhub.security.Authentication;
 import tech.itpark.proggerhub.service.AuthService;
 import tech.itpark.proggerhub.service.model.UserModel;
@@ -30,7 +31,7 @@ public class AuthController {
             }
 
             final var dto = converter.read(request.getReader(), UserDto.class);
-            final var id = service.register(new UserModel(dto.getLogin(), dto.getPassword()));
+            final var id = service.register(new UserModel(dto.getLogin(), dto.getPassword(), dto.getSecretPhrase()));
             response.addHeader("Content-Type", ContentTypes.APPLICATION_JSON);
             converter.write(response.getWriter(), new UserIdDto(id));
         } catch (IOException e) {
@@ -46,7 +47,7 @@ public class AuthController {
             }
 
             final var dto = converter.read(request.getReader(), UserDto.class);
-            final var token = service.login(new UserModel(dto.getLogin(), dto.getPassword()));
+            final var token = service.login(new UserModel(dto.getLogin(), dto.getPassword(), dto.getSecretPhrase()));
 
             response.addHeader("Content-Type", ContentTypes.APPLICATION_JSON);
             converter.write(response.getWriter(), new UserTokenDto(token));
@@ -61,7 +62,16 @@ public class AuthController {
     }
 
     public void restore(HttpServletRequest request, HttpServletResponse response) {
-        // TODO:
+        try {
+            if (!converter.canRead(request.getHeader("Content-Type"), UserDto.class)) {
+                response.sendError(415, "media type not supported");
+                return;
+            }
+            final var dto = converter.read(request.getReader(), UserDto.class);
+            service.restore(new UserModel(dto.getLogin(), dto.getPassword(), dto.getSecretPhrase()));
+        } catch (IOException e) {
+            throw new PasswordRecoveryException(e);
+        }
     }
 
 }

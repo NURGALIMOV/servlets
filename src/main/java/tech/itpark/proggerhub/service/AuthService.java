@@ -7,6 +7,7 @@ import tech.itpark.proggerhub.crypto.TokenGenerator;
 import tech.itpark.proggerhub.exception.*;
 import tech.itpark.proggerhub.repository.AuthRepository;
 import tech.itpark.proggerhub.repository.model.UserTokenModel;
+import tech.itpark.proggerhub.repository.model.UserWithIdModel;
 import tech.itpark.proggerhub.security.AuthProvider;
 import tech.itpark.proggerhub.security.Authentication;
 import tech.itpark.proggerhub.service.model.UserAuthModel;
@@ -27,23 +28,47 @@ public class AuthService implements AuthProvider {
         if (!model.getLogin().matches("^[a-zA-Z0-9]{3,15}$")) {
             throw new BadLoginException();
         }
+        if ((model.getSecretPhrase() == null) || model.getSecretPhrase().isBlank()) {
+            throw new SecretPhrasePolicyViolationException("Must be not empty");
+        }
         if (model.getPassword().length() < 8) {
             throw new PasswordPolicyViolationException("must be longer than 8");
         }
-        return repository.save(new tech.itpark.proggerhub.repository.model.UserModel(
-                model.getLogin().trim().toLowerCase(), hasher.hash(model.getPassword())));
+        return repository.save(
+                new tech.itpark.proggerhub.repository.model.UserModel(
+                        model.getLogin().trim().toLowerCase(),
+                        hasher.hash(model.getPassword()),
+                        hasher.hash(model.getSecretPhrase())
+                )
+        );
     }
 
     public String login(UserModel model) {
-        final var user = repository.findByLogin(model.getLogin())
-                .orElseThrow(UserNotFoundException::new);
-        if (!hasher.match(user.getHash(), model.getPassword())) {
+        final var user = getUserByLogin(model.getLogin());
+        if (!hasher.match(user.getPasswordHash(), model.getPassword())) {
             throw new PasswordsNotMatchedException();
         }
         final var token = tokenGenerator.generate();
         repository.save(new UserTokenModel(user.getId(), token));
         return token;
     }
+
+    private UserWithIdModel getUserByLogin(String login) {
+        return repository.findByLogin(login).orElseThrow(UserNotFoundException::new);
+    }
+
+    public void restore(UserModel model) {
+        final var user = getUserByLogin(model.getLogin());
+        if (!hasher.match(user.getSecretPhraseHash(), model.getSecretPhrase())) {
+            throw new SecretPhraseNotMatchedException();
+        }
+        if (model.getPassword().length() < 8) {
+            throw new PasswordPolicyViolationException("must be longer than 8");
+        }
+        repository.updatePassword(user.getId(), hasher.hash(model.getPassword()));
+    }
+
+
 
     public Authentication authenticate(String token) {
         return repository.findByToken(token)

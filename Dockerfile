@@ -3,6 +3,6 @@ WORKDIR /app
 COPY . .
 RUN mvn -B package
 
-FROM tomcat:10-jdk11-openjdk-slim
-COPY --from=build /app/target/servlets-1.0.war $CATALINA_HOME/webapps/ROOT.war
+FROM tomcat:9-jdk11-openjdk-slim
+COPY --from=build /app/target/servlets-1.0-jar-with-dependencies.jar $CATALINA_HOME/webapps/ROOT.war
 EXPOSE 8080

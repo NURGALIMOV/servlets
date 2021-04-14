@@ -3,6 +3,7 @@ CREATE TABLE users
     id       BIGSERIAL PRIMARY KEY,
     login    TEXT UNIQUE NOT NULL,
     password TEXT        NOT NULL,
+    secret_phrase TEXT UNIQUE,
     roles    TEXT[]      NOT NULL DEFAULT '{ROLE_USER}',
     removed  BOOLEAN              DEFAULT FALSE,
     modified TIMESTAMP,

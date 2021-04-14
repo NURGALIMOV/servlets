@@ -9,6 +9,7 @@ public class UserWithIdModel {
 
     private long id;
     private String login;
-    private String hash;
+    private String passwordHash;
+    private String secretPhraseHash;
 
 }

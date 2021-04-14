@@ -5,7 +5,8 @@ Content-Type: application/json
 
 {
   "login": "user",
-  "password": "secret99"
+  "password": "secret99",
+  "secretPhrase": "secret"
 }
 
 > {%
@@ -27,6 +28,40 @@ Content-Type: application/json
 > {%
 client.test("Request executed successfully", function() {
   client.assert(response.status === 200, "Response status is not 200");
+});
+%}
+
+###
+
+PUT http://localhost:8080/auth/restore
+Content-Type: application/json
+
+{
+  "login": "user",
+  "password": "99secret99",
+  "secretPhrase": "secret"
+}
+
+> {%
+client.test("Request executed successfully", function() {
+  client.assert(response.status === 200, "Response status is not 200");
+});
+%}
+
+###
+
+PUT http://localhost:8080/auth/restore
+Content-Type: application/json
+
+{
+  "login": "user",
+  "password": "99secret99",
+  "secretPhrase": "secret99"
+}
+
+> {%
+client.test("Request executed successfully", function() {
+  client.assert(response.status === 500, "Response status is not 500");
 });
 %}
 
